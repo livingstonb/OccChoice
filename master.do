@@ -5,7 +5,7 @@ clear;
 
 // choose main directory;
 
-local OS windows; // windows, mac;
+local OS mac; // windows, mac;
 
 if 	"`OS'" == "windows" {;
 	global maindir C:/Users/Brian/Documents/GitHub/OccChoice;
@@ -23,7 +23,8 @@ global stats ${maindir}/stats;
 /* -----------------------------------------------------------------------------
 BUILD DATASET
 -----------------------------------------------------------------------------*/;
-
+// define region as 'state' or 'metro';
+global region state;
 do ${build}/code/build.do;
 
 /* -----------------------------------------------------------------------------

@@ -3,7 +3,7 @@ set more 1;
 
 clear;
 
-use ${build}/input/raw.dta;
+use ${build}/input/raw_${region}.dta;
 
 /* -----------------------------------------------------------------------------
 RENAME VARIABLES
@@ -12,6 +12,8 @@ rename datanum dataset;
 rename serial hhid;
 rename wkswork1 wkswork;
 rename incbus00 farmbus;
+rename statefip state;
+rename incwage labinc;
 
 /* -----------------------------------------------------------------------------
 SPECIAL VALUES
@@ -33,14 +35,24 @@ SAMPLE SELECTION
 keep if race == 1;
 keep if sex == 1;
 keep if (empstat == 1) & !inlist(empstatd,13,14,15); // exclude military;
+drop if occ1990 == 991; // unemployed;
 keep if (age >= 25) & (age <= 54);
-keep if (uhrswork >= 30) & !missing(uhrswork);
-keep if (incwage >= 1000) & !missing(incwage);
-keep if (wkswork >= 48) & !missing(wkswork);
+keep if uhrswork >= 30;
+keep if wkswork >= 48;
 
 /* -----------------------------------------------------------------------------
 GENERATE NEW VARIABLES
 -----------------------------------------------------------------------------*/;
+if "$region" == "state" {;
+	gen metarea = .;
+};
+else if "$region" == "metro" {;
+	gen state = .;
+};
+
+// earnings;
+gen earnings = labinc + farmbus;
+
 // years of education;
 gen yrseduc = .;
 replace yrseduc = 0 if educ == 0;
@@ -219,6 +231,8 @@ label values occ_code occ_codelbl;
 /* -----------------------------------------------------------------------------
 ADJUST TO 2012 DOLLARS, CPI-U
 -----------------------------------------------------------------------------*/;
+scalar cpi2007 = 207.342;
+
 gen cpi = .;
 replace cpi = 29.6 if year == 1960;
 replace cpi = 38.8 if year == 1970;
@@ -228,8 +242,19 @@ replace cpi = 172.2 if year == 2000;
 replace cpi = 218.056 if year == 2010;
 replace cpi = 224.939 if year == 2011;
 replace cpi = 229.594 if year == 2012;
+
+gen earn2007 = earnings * cpi2007 / cpi;
+keep if earn2007 >= 1000;
+
 replace cpi = cpi / 229.594;
 
-replace incwage = incwage / cpi;
+replace labinc = labinc / cpi;
 replace farmbus = farmbus / cpi;
+replace earnings = earnings / cpi;
+
+/* -----------------------------------------------------------------------------
+SAVE CLEANED DATASET TO OUTPUT
+-----------------------------------------------------------------------------*/;
+cap mkdir ${build}/output;
+save ${build}/output/cleaned_${region}.dta, replace;
 
