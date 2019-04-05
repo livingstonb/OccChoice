@@ -59,23 +59,20 @@ else if "$region" == "metro" {;
 };
 
 // CPI-U annual averages, using previous year's CPI because of survey wording;
+// ACS surveys for 2010-2012 are already inflation adjusted to 2012 dollars;
 gen cpi = .;
 replace cpi = 29.1 if year == 1960;
 replace cpi = 36.7 if year == 1970;
 replace cpi = 72.6 if year == 1980;
 replace cpi = 124.0 if year == 1990;
 replace cpi = 166.6 if year == 2000;
-replace cpi = 214.537 if year == 2010;
-replace cpi = 218.056 if year == 2011;
-replace cpi = 224.939 if year == 2012;
 
 // earnings;
 gen earnings = incwage + incbusfarm;
-scalar cpi2007 = 207.342;
-gen earn2007 = earnings * cpi2007 / cpi;
 
-// rescale cpi so 2012 (actually 2011) index is 1;
-replace cpi = cpi / 224.939;
+// rescale cpi so 2012 index is 1;
+scalar cpi2012 = 229.594;
+replace cpi = cpi / cpi2012;
 
 // years of education;
 gen yrseduc = .;
@@ -257,13 +254,18 @@ VARIABLE ADJUSTMENTS
 -----------------------------------------------------------------------------*/;
 replace perwt = perwt / 100;
 local nomvars incwage incbusfarm earnings;
+
+// convert to 2012 dollars;
 foreach var of local nomvars {;
-	replace `var' = `var' / cpi;
+	replace `var' = `var' / cpi if year <= 2000;
 };
 
 /* -----------------------------------------------------------------------------
 DROP OBSERVATIONS WITH LOW 2007 EARNINGS
 -----------------------------------------------------------------------------*/;
+scalar cpi2007 = 207.342;
+scalar cpi2012 = 229.594;
+gen earn2007 = earnings * cpi2007 / cpi2012;
 keep if earn2007 >= 1000;
 
 /* -----------------------------------------------------------------------------
