@@ -61,6 +61,9 @@ gen earnings = labinc + farmbus;
 scalar cpi2007 = 207.342;
 gen earn2007 = earnings * cpi2007 / cpi;
 
+// rescale cpi so 2012 index is 1;
+replace cpi = cpi / 229.594;
+
 // years of education;
 gen yrseduc = .;
 replace yrseduc = 0 if educ == 0;
