@@ -28,6 +28,17 @@ ADJUSTMENTS
 replace perwt = perwt / 100;
 
 /* -----------------------------------------------------------------------------
+SAMPLE SELECTION
+-----------------------------------------------------------------------------*/;
+keep if race == 1;
+keep if sex == 1;
+keep if (empstat == 1) & !inlist(empstatd,13,14,15); // exclude military;
+keep if (age >= 25) & (age <= 54);
+keep if (uhrswork >= 30) & !missing(uhrswork);
+keep if (incwage >= 1000) & !missing(incwage);
+keep if (wkswork >= 48) & !missing(wkswork);
+
+/* -----------------------------------------------------------------------------
 GENERATE NEW VARIABLES
 -----------------------------------------------------------------------------*/;
 // years of education;
@@ -204,3 +215,21 @@ label	define	occ_codelbl	65	`"Non Motor Vehicle Operator"',	add;
 label	define	occ_codelbl	66	`"Freight, Stock, Material	Handler"',	add;	
 
 label values occ_code occ_codelbl;
+
+/* -----------------------------------------------------------------------------
+ADJUST TO 2012 DOLLARS, CPI-U
+-----------------------------------------------------------------------------*/;
+gen cpi = .;
+replace cpi = 29.6 if year == 1960;
+replace cpi = 38.8 if year == 1970;
+replace cpi = 82.4 if year == 1980;
+replace cpi = 130.7 if year == 1990;
+replace cpi = 172.2 if year == 2000;
+replace cpi = 218.056 if year == 2010;
+replace cpi = 224.939 if year == 2011;
+replace cpi = 229.594 if year == 2012;
+replace cpi = cpi / 229.594;
+
+replace incwage = incwage / cpi;
+replace farmbus = farmbus / cpi;
+
