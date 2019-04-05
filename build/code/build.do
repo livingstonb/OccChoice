@@ -58,24 +58,24 @@ else if "$region" == "metro" {;
 	gen state = .;
 };
 
-// CPI-U annual averages;
+// CPI-U annual averages, using previous year's CPI because of survey wording;
 gen cpi = .;
-replace cpi = 29.6 if year == 1960;
-replace cpi = 38.8 if year == 1970;
-replace cpi = 82.4 if year == 1980;
-replace cpi = 130.7 if year == 1990;
-replace cpi = 172.2 if year == 2000;
-replace cpi = 218.056 if year == 2010;
-replace cpi = 224.939 if year == 2011;
-replace cpi = 229.594 if year == 2012;
+replace cpi = 29.1 if year == 1960;
+replace cpi = 36.7 if year == 1970;
+replace cpi = 72.6 if year == 1980;
+replace cpi = 124.0 if year == 1990;
+replace cpi = 166.6 if year == 2000;
+replace cpi = 214.537 if year == 2010;
+replace cpi = 218.056 if year == 2011;
+replace cpi = 224.939 if year == 2012;
 
 // earnings;
 gen earnings = incwage + incbusfarm;
 scalar cpi2007 = 207.342;
 gen earn2007 = earnings * cpi2007 / cpi;
 
-// rescale cpi so 2012 index is 1;
-replace cpi = cpi / 229.594;
+// rescale cpi so 2012 (actually 2011) index is 1;
+replace cpi = cpi / 224.939;
 
 // years of education;
 gen yrseduc = .;
@@ -275,7 +275,7 @@ save ${build}/output/cleaned_${region}.dta, replace;
 /* -----------------------------------------------------------------------------
 COLLAPSE TO REGION LEVEL
 -----------------------------------------------------------------------------*/;
-collapse (sum) incwage farmbus earnings person_adj home_adj, by(year) cw;
+collapse (sum) incwage incbusfarm earnings person_adj home_adj, by(year) cw;
 
 /* -----------------------------------------------------------------------------
 SAVE CLEANED DATASET TO OUTPU
