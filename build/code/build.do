@@ -11,9 +11,23 @@ RENAME VARIABLES
 rename datanum dataset;
 rename serial hhid;
 rename wkswork1 wkswork;
-rename incbus00 farmbus;
 rename statefip state;
-rename incwage labinc;
+rename incwage incwage;
+
+/* -----------------------------------------------------------------------------
+BUSINESS AND FARM INCOME, DIFFERENT DEFS ACROSS YEARS
+-----------------------------------------------------------------------------*/;
+rename incbusfm busfarm; // bus and farm income for yr 1960;
+rename incbus00 newincbus; // bus and farm income for yr >= 2000;
+
+foreach var of varlist busfarm newincbus incfarm incbus {;
+	replace `var' = . if `var' == 999999;
+};
+
+replace busfarm = incfarm + incbus if (year >= 1970) & (year <= 1990);
+replace busfarm = newincbus if year >= 2000;
+drop newincbus incfarm incbus;
+rename busfarm incbusfarm;
 
 /* -----------------------------------------------------------------------------
 SPECIAL VALUES
@@ -22,7 +36,6 @@ replace occ1990 = . if occ1990 == 999;
 replace wkswork = . if wkswork == 0;
 replace uhrswork = . if uhrswork == 0;
 replace incwage = . if inlist(incwage,999998,999999);
-replace farmbus = . if farmbus == 999999;
 
 /* -----------------------------------------------------------------------------
 SAMPLE SELECTION
@@ -57,7 +70,7 @@ replace cpi = 224.939 if year == 2011;
 replace cpi = 229.594 if year == 2012;
 
 // earnings;
-gen earnings = labinc + farmbus;
+gen earnings = incwage + incbusfarm;
 scalar cpi2007 = 207.342;
 gen earn2007 = earnings * cpi2007 / cpi;
 
@@ -243,9 +256,10 @@ label values occ_code occ_codelbl;
 VARIABLE ADJUSTMENTS
 -----------------------------------------------------------------------------*/;
 replace perwt = perwt / 100;
-replace labinc = labinc / cpi;
-replace farmbus = farmbus / cpi;
-replace earnings = earnings / cpi;
+local nomvars incwage incbusfarm earnings;
+foreach var of local nomvars {;
+	replace `var' = `var' / cpi;
+};
 
 /* -----------------------------------------------------------------------------
 DROP OBSERVATIONS WITH LOW 2007 EARNINGS
@@ -253,8 +267,18 @@ DROP OBSERVATIONS WITH LOW 2007 EARNINGS
 keep if earn2007 >= 1000;
 
 /* -----------------------------------------------------------------------------
-SAVE CLEANED DATASET TO OUTPUT
+SAVE CLEANED DATASET TO TEMP
 -----------------------------------------------------------------------------*/;
-cap mkdir ${build}/output;
+cap mkdir ${build}/temp;
 save ${build}/output/cleaned_${region}.dta, replace;
 
+/* -----------------------------------------------------------------------------
+COLLAPSE TO REGION LEVEL
+-----------------------------------------------------------------------------*/;
+collapse (sum) incwage farmbus earnings person_adj home_adj, by(year) cw;
+
+/* -----------------------------------------------------------------------------
+SAVE CLEANED DATASET TO OUTPU
+-----------------------------------------------------------------------------*/;
+cap mkdir ${build}/output;
+save ${build}/output/final_${region}.dta, replace;
