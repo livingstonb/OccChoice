@@ -73,7 +73,7 @@ gen spec3 = 1 if survey == 1960;
 replace spec3 = 2 if survey == 2010;
 
 /* CPI-U annual averages, using previous year's CPI because of survey wording
-ACS surveys for 2010-2012 are already inflation adjusted to 2012 dollars */;
+ACS surveys for 2010-2014 are already inflation adjusted to 2014 dollars */;
 gen cpi = .;
 replace cpi = 29.1 if year == 1960;
 replace cpi = 36.7 if year == 1970;
@@ -84,9 +84,9 @@ replace cpi = 166.6 if year == 2000;
 // earnings;
 gen earnings = incwage + incbusfarm;
 
-// rescale cpi so 2012 index is 1;
-scalar cpi2012 = 229.594;
-replace cpi = cpi / cpi2012;
+// rescale cpi so 2014 index is 1;
+scalar cpi2014 = 236.736;
+replace cpi = cpi / cpi2014;
 
 // years of education;
 gen yrseduc = .;
@@ -250,7 +250,7 @@ VARIABLE ADJUSTMENTS
 replace perwt = perwt / 100;
 local nomvars incwage incbusfarm earnings;
 
-// convert to 2012 dollars;
+// convert to 2014 dollars;
 foreach var of local nomvars {;
 	replace `var' = `var' / cpi if year <= 2000;
 };
@@ -259,8 +259,8 @@ foreach var of local nomvars {;
 DROP OBSERVATIONS WITH LOW 2007 EARNINGS
 -----------------------------------------------------------------------------*/;
 scalar cpi2007 = 207.342;
-scalar cpi2012 = 229.594;
-gen earn2007 = earnings * cpi2007 / cpi2012;
+scalar cpi2014 = 236.736;
+gen earn2007 = earnings * cpi2007 / cpi2014;
 keep if earn2007 >= 1000;
 drop earn2007;
 
