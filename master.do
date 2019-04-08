@@ -25,7 +25,8 @@ BUILD DATASET
 -----------------------------------------------------------------------------*/;
 // define region as 'state' or 'metro';
 global region state;
-do ${build}/code/build.do;
+do ${build}/code/build1_raw.do;
+do ${build}/code/build1_groups.do;
 
 /* -----------------------------------------------------------------------------
 COMPUTE STATISTICS
