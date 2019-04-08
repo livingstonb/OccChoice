@@ -8,7 +8,7 @@ clear;
 local OS mac; // windows, mac;
 
 if 	"`OS'" == "windows" {;
-	global maindir C:/Users/Brian/Documents/GitHub/OccChoice;
+	global maindir D:/GitHub/OccChoice;
 };
 else if "`OS'" == "windows2" {;
 	global maindir C:/Users/Brian-laptop/Documents/GitHub/OccChoice;

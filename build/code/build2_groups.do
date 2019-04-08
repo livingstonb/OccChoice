@@ -14,16 +14,16 @@ local baseocc 1;
 gen nperson = 1;
 collapse 	(sum) nperson
 			(median) incwage incbusfarm earnings yrseduc [fweight=perwt], 
-			by(year statefip occ_code);
+			by(survey statefip occ_code);
 
 // employment in base sector;
-bysort year statefip: gen temp = nperson if occ_code == `baseocc';
-bysort year statefip: egen baseemp = max(temp);
+bysort survey statefip: gen temp = nperson if occ_code == `baseocc';
+bysort survey statefip: egen baseemp = max(temp);
 drop temp;
 
 // median earnings in base sector;
-bysort year statefip: gen temp = earnings if occ_code == `baseocc';
-bysort year statefip: egen baseearn = max(temp);
+bysort survey statefip: gen temp = earnings if occ_code == `baseocc';
+bysort survey statefip: egen baseearn = max(temp);
 drop temp;
 
 // relative employment;

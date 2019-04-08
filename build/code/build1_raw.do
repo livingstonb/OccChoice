@@ -53,6 +53,25 @@ else if "$region" == "metro" {;
 	gen state = .;
 };
 
+// survey year;
+gen survey = year;
+replace survey = 2010 if inlist(year,2011,2012,2013,2014);
+
+// 20-year changes;
+gen spec1 = 1 if survey == 1960;
+replace spec1 = 2 if survey == 1980;
+replace spec1 = 3 if survey == 2000;
+replace spec1 = 4 if survey == 2010;
+
+// 30-year changes;
+gen spec2 = 1 if survey == 1960;
+replace spec2 = 2 if survey == 1990;
+replace spec2 = 3 if survey == 2010;
+
+// long-run changes;
+gen spec3 = 1 if survey == 1960;
+replace spec3 = 2 if survey == 2010;
+
 /* CPI-U annual averages, using previous year's CPI because of survey wording
 ACS surveys for 2010-2012 are already inflation adjusted to 2012 dollars */;
 gen cpi = .;
