@@ -10,7 +10,6 @@ RENAME VARIABLES
 -----------------------------------------------------------------------------*/;
 rename datanum dataset;
 rename serial hhid;
-rename wkswork1 wkswork;
 rename statefip state;
 rename incwage incwage;
 
@@ -30,23 +29,19 @@ drop newincbus incfarm incbus;
 rename busfarm incbusfarm;
 
 /* -----------------------------------------------------------------------------
-SPECIAL VALUES
------------------------------------------------------------------------------*/;
-replace occ1990 = . if occ1990 == 999;
-replace wkswork = . if wkswork == 0;
-replace uhrswork = . if uhrswork == 0;
-replace incwage = . if inlist(incwage,999998,999999);
-
-/* -----------------------------------------------------------------------------
 SAMPLE SELECTION
 -----------------------------------------------------------------------------*/;
+drop if (occ1990 == 999) | (wkswork2 == 0) | (uhrswork == 0) | (hrswork2 == 0);
+drop if inlist(incwage,999998,999999);
+
 keep if race == 1;
 keep if sex == 1;
 keep if (empstat == 1) & !inlist(empstatd,13,14,15); // exclude military;
-drop if occ1990 == 991; // unemployed;
+drop if inlist(occ1990,991,999); // unemployed or occupation unknown;
 keep if (age >= 25) & (age <= 54);
-keep if uhrswork >= 30;
-keep if wkswork >= 48;
+keep if (uhrswork >= 30) & (year >= 1980);
+keep if (hrswork2 >= 3) & (year <= 1970);
+keep if (wkswork2 >= 48);
 
 /* -----------------------------------------------------------------------------
 GENERATE NEW VARIABLES
@@ -58,8 +53,8 @@ else if "$region" == "metro" {;
 	gen state = .;
 };
 
-// CPI-U annual averages, using previous year's CPI because of survey wording;
-// ACS surveys for 2010-2012 are already inflation adjusted to 2012 dollars;
+/* CPI-U annual averages, using previous year's CPI because of survey wording
+ACS surveys for 2010-2012 are already inflation adjusted to 2012 dollars */;
 gen cpi = .;
 replace cpi = 29.1 if year == 1960;
 replace cpi = 36.7 if year == 1970;
@@ -267,12 +262,13 @@ scalar cpi2007 = 207.342;
 scalar cpi2012 = 229.594;
 gen earn2007 = earnings * cpi2007 / cpi2012;
 keep if earn2007 >= 1000;
+drop earn2007;
 
 /* -----------------------------------------------------------------------------
 SAVE CLEANED DATASET TO TEMP
 -----------------------------------------------------------------------------*/;
 cap mkdir ${build}/temp;
-save ${build}/output/cleaned_${region}.dta, replace;
+save ${build}/temp/cleaned_${region}.dta, replace;
 
 /* -----------------------------------------------------------------------------
 COLLAPSE TO REGION LEVEL
