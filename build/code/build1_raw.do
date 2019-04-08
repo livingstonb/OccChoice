@@ -10,8 +10,6 @@ RENAME VARIABLES
 -----------------------------------------------------------------------------*/;
 rename datanum dataset;
 rename serial hhid;
-rename statefip state;
-rename incwage incwage;
 
 /* -----------------------------------------------------------------------------
 BUSINESS AND FARM INCOME, DIFFERENT DEFS ACROSS YEARS
@@ -50,7 +48,7 @@ if "$region" == "state" {;
 	gen metarea = .;
 };
 else if "$region" == "metro" {;
-	gen state = .;
+	gen statefip = .;
 };
 
 // survey year;
