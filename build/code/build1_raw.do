@@ -20,7 +20,7 @@ rename incbusfm busfarm; // bus and farm income for yr 1960;
 rename incbus00 newincbus; // bus and farm income for yr >= 2000;
 
 foreach var of varlist busfarm newincbus incfarm incbus {;
-	replace `var' = . if `var' == 999999;
+	drop if `var' == 999999;
 };
 
 replace busfarm = incfarm + incbus if (year >= 1970) & (year <= 1990);
