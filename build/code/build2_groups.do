@@ -4,34 +4,28 @@ clear;
 
 use ${build}/temp/cleaned_${region}.dta;
 
-if "$region" == "state" {;
-	local regionvar statefip;
-};
-else if "$region" == "metro" {;
-	local regionvar metarea;
-};
-
 
 /* -----------------------------------------------------------------------------
 COLLAPSE TO REGION LEVEL
 -----------------------------------------------------------------------------*/;
+
 // declare base occupation;
 local baseocc 1;
 
 gen nperson = 1;
 collapse 	(sum) nperson
 			(median) incwage incbusfarm earnings yrseduc [fweight=perwt], 
-			by(survey `regionvar' occ_code);
+			by(survey $regionvar occ_code);
 gen learnings = log(earnings);
 
 // employment in base sector;
-bysort survey `regionvar': gen temp = nperson if occ_code == `baseocc';
-bysort survey `regionvar': egen baseemp = max(temp);
+bysort survey ${regionvar}: gen temp = nperson if occ_code == `baseocc';
+bysort survey ${regionvar}: egen baseemp = max(temp);
 drop temp;
 
 // median earnings in base sector;
-bysort survey `regionvar': gen temp = earnings if occ_code == `baseocc';
-bysort survey `regionvar': egen baseearn = max(temp);
+bysort survey ${regionvar}: gen temp = earnings if occ_code == `baseocc';
+bysort survey ${regionvar}: egen baseearn = max(temp);
 drop temp;
 
 // relative employment;

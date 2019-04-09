@@ -25,11 +25,27 @@ BUILD DATASET
 -----------------------------------------------------------------------------*/;
 // define region as 'state' or 'metro';
 global region state;
+
+if "$region" == "state" {;
+	global regionvar statefip;
+};
+else if "$region" == "metro" {;
+	global regionvar metarea;
+};
+
 do ${build}/code/build1_raw.do;
 do ${build}/code/build1_groups.do;
 
 /* -----------------------------------------------------------------------------
 COMPUTE STATISTICS
 -----------------------------------------------------------------------------*/;
+// define region as 'state' or 'metro';
+global region state;
 
+if "$region" == "state" {;
+	global regionvar statefip;
+};
+else if "$region" == "metro" {;
+	global regionvar metarea;
+};
 // do ${stats}/code/stats.do;
