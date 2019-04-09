@@ -248,7 +248,7 @@ label values occ_code occ_codelbl;
 /* -----------------------------------------------------------------------------
 VARIABLE ADJUSTMENTS
 -----------------------------------------------------------------------------*/;
-replace perwt = perwt / 100;
+// perwt = perwt / 100;
 local nomvars incwage incbusfarm earnings;
 
 // convert to 2014 dollars;

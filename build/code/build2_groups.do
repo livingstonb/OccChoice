@@ -13,7 +13,10 @@ COLLAPSE TO REGION LEVEL
 local baseocc 1;
 
 gen nperson = 1;
+bysort survey $regionvar occ_code: egen groupobs = count(nperson);
+
 collapse 	(sum) nperson
+			(mean) groupobs
 			(median) incwage incbusfarm earnings yrseduc [fweight=perwt], 
 			by(survey $regionvar occ_code);
 gen learnings = log(earnings);
