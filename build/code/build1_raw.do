@@ -10,6 +10,8 @@ RENAME VARIABLES
 -----------------------------------------------------------------------------*/;
 rename datanum dataset;
 rename serial hhid;
+replace year = multyear if !missing(multyear);
+drop multyear;
 
 /* -----------------------------------------------------------------------------
 BUSINESS AND FARM INCOME, DIFFERENT DEFS ACROSS YEARS
@@ -29,7 +31,8 @@ rename busfarm incbusfarm;
 /* -----------------------------------------------------------------------------
 SAMPLE SELECTION
 -----------------------------------------------------------------------------*/;
-drop if (occ1990 == 999) | (wkswork2 == 0) | (uhrswork == 0) | (hrswork2 == 0);
+drop if (occ1990 == 999) | (wkswork2 == 0);
+drop if (uhrswork == 0 & year >= 1980) | (hrswork2 == 0 & year <= 1970);
 drop if inlist(incwage,999998,999999);
 
 keep if race == 1;
@@ -37,9 +40,9 @@ keep if sex == 1;
 keep if (empstat == 1) & !inlist(empstatd,13,14,15); // exclude military;
 drop if occ1990 == 991; // unemployed;
 keep if (age >= 25) & (age <= 54);
-keep if (uhrswork >= 30) & (year >= 1980);
-keep if (hrswork2 >= 3) & (year <= 1970);
-keep if (wkswork2 >= 48);
+drop if (uhrswork < 30) & (year >= 1980);
+drop if (hrswork2 <= 3) & (year <= 1970);
+keep if (wkswork2 >= 5);
 
 /* -----------------------------------------------------------------------------
 GENERATE NEW VARIABLES
