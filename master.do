@@ -5,7 +5,7 @@ clear;
 
 // choose main directory;
 
-local OS mac; // windows, mac;
+local OS windows; // windows, mac;
 
 if 	"`OS'" == "windows" {;
 	global maindir D:/GitHub/OccChoice;
@@ -34,7 +34,7 @@ else if "$region" == "metro" {;
 };
 
 do ${build}/code/build1_raw.do;
-do ${build}/code/build1_groups.do;
+do ${build}/code/build2_groups.do;
 
 /* -----------------------------------------------------------------------------
 COMPUTE STATISTICS
