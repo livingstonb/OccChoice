@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+# file directory
 os = 'windows'
 
 if os == 'mac':
@@ -10,8 +11,16 @@ elif os == 'linux':
 elif os == 'windows':
 	outdir = 'D:/GitHub/OccChoice/stats/output/'
 	
-for timevar in ['spec1','spec2','spec3']:
-	fname = 'fdregressions_' + timevar + '.csv'
+# occupation code (occ19, occ66)
+occs = "occ66"
+
+if occs == "occ19":
+	specs = ['spec1','spec2']
+elif occs == "occ66":
+	specs = ['spec1','spec2','spec3']
+	
+for timevar in specs:
+	fname = 'fdregressions_' + timevar + '_' + occs +'.csv'
 
 	tab = pd.read_csv(outdir+fname,index_col=0)
 	tab = tab.applymap(lambda x: np.round(x,3))
@@ -40,7 +49,28 @@ for timevar in ['spec1','spec2','spec3']:
 	tab["theta"] = tab["theta"] + ' (' + tab["se_theta"] + ')'
 	tab = tab[["beta","theta"]]
 
-	occ_codes = ["1 Executives, Administrative, and Managerial",
+	if occs == "occ19":
+		occ_codes = ["1 Executives, Administrative, and Managerial",
+					"2 Management Related",
+					"3 Architects, Engineers, Math, and Computer Science",
+					"4 Natural and Social Scientists, Recreation, Religious, Arts, Athletes",
+					"5 Doctors and Lawyers",
+					"6 Nurses, Therapists, and Other Health Service",
+					"7 Teachers, Postsecondary",
+					"8 Teachers, Non-Postsecondary and Librarians",
+					"9 Health and Science Technicians",
+					"10 Sales, All",
+					"11 Administrative Support, Clerks, Record Keepers",
+					"12 Fire, Police, and Guards",
+					"13 Food, Cleaning, and Personal Services and Private Household",
+					"14 Farm, Related Agrigulture, Logging, and Extraction",
+					"15 Mechanics and Construction",
+					"16 Precision Manufacturing",
+					"17 Manufacturing Operators",
+					"18 Fabricators, Inspectors, and Material Handlers",
+					"19 Vehicle Operators"]
+	elif occs == "occ66":
+		occ_codes = ["1 Executives, Administrative, and Managerial",
 					"2 Management Related",
 					"3 Architects",
 					"4 Engineers",
@@ -99,7 +129,6 @@ for timevar in ['spec1','spec2','spec3']:
 					"57 Metal and Plastic Processing Operator",
 					"58 Woodworking Machine Operator",
 					"59 Textile Machine Operator",
-		
 					"60 Printing Machine Operator",
 					"61 Machine Operator, Other"
 					"62 Fabricators",
