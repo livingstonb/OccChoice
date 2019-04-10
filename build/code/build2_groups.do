@@ -16,7 +16,7 @@ gen nperson = 1;
 bysort survey $regionvar occ_code: egen groupobs = count(nperson);
 
 collapse 	(sum) nperson
-			(mean) groupobs
+			(mean) groupobs spec*
 			(median) incwage incbusfarm earnings yrseduc [fweight=perwt], 
 			by(survey $regionvar occ_code);
 gen learnings = log(earnings);
