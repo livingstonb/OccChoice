@@ -149,4 +149,8 @@ for timevar in specs:
 
 	tab.loc[tab["beta"]=="nan (nan)","beta"] = "-"
 	tab.loc[tab["theta"]=="nan (nan)","theta"] = "-"
+	
+	# reorder according to betas
+	tab.sort_values(by=['beta'],ascending=False,inplace=True)
+	
 	print(tab.head())
