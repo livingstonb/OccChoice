@@ -1,5 +1,5 @@
-
-
+#delimit ;
+set more 1;
 
 /* -----------------------------------------------------------------------------
 REGRESSIONS
@@ -11,10 +11,10 @@ scalar io = 0;
 forvalues occnum = 1/66 {;
 	scalar io = io + 1;
 	
-	quietly reg d.lrel_emp d.learnings d.lrel_earn 
+	quietly reg d.lrel_emp d.learnings d.lrel_earn
 		if occ_code == `occnum', robust;
 		
-	if `occnum' == `baseocc' {;
+	if `occnum' == $baseocc {;
 		matrix beta = .;
 		matrix se_beta = .;
 		matrix p_beta = .;
@@ -35,7 +35,7 @@ forvalues occnum = 1/66 {;
 	local row: label (occ_code) `occnum';
 	local row = stritrim("`row'");
 	local row = strtrim("`row'");
-	local row = abbrev("`row'",29);
+	local row = substr("`row'",1,29);
 	local row = subinstr("`row'",".","",5);
 	foreach mat in beta se_beta theta se_theta {;
 		matrix rownames `mat' = "`occnum' `row'";
@@ -65,3 +65,4 @@ mat colnames coeffs = "beta_j" "se(beta_j)" "p(beta_j>|t|)" "theta_j" "se(theta_
 cap mkdir ${stats}/output;
 putexcel set ${stats}/output/fdregressions_${timevar}.xlsx, replace;
 putexcel A1=matrix(coeffs), names;
+drop groupid;

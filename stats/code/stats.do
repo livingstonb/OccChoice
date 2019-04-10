@@ -8,15 +8,13 @@ use ${build}/output/final_${region}.dta;
 /* -----------------------------------------------------------------------------
 DECLARE BASE OCCUPATION AND TIME SPECIFICATION
 -----------------------------------------------------------------------------*/;
-local baseocc 1;
+global baseocc 1;
 
 /*
 spec1 - 20ish year changes
 spec2 - 30ish year changes
 spec3 - long-run changes
 */;
-local timevar spec1;
-
 foreach sp of varlist spec1 spec2 spec3 {;
 	global timevar `sp';
 
@@ -25,12 +23,12 @@ foreach sp of varlist spec1 spec2 spec3 {;
 	-----------------------------------------------------------------------------*/;
 
 	// employment in base sector;
-	bysort survey ${regionvar}: gen temp = nperson if occ_code == `baseocc';
+	bysort survey ${regionvar}: gen temp = nperson if occ_code == ${baseocc};
 	bysort survey ${regionvar}: egen baseemp = max(temp);
 	drop temp;
 
 	// median earnings in base sector;
-	bysort survey ${regionvar}: gen temp = earnings if occ_code == `baseocc';
+	bysort survey ${regionvar}: gen temp = earnings if occ_code == ${baseocc};
 	bysort survey ${regionvar}: egen baseearn = max(temp);
 	drop temp;
 
@@ -45,5 +43,6 @@ foreach sp of varlist spec1 spec2 spec3 {;
 	/* -----------------------------------------------------------------------------
 	REGRESSIONS
 	-----------------------------------------------------------------------------*/;
-	do ${stats}/code/regressions.do;
+	do ${stats}/code/stats_regressions.do;
+	drop base* *rel_emp *rel_earn;
 };
