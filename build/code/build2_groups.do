@@ -21,23 +21,6 @@ collapse 	(sum) nperson
 			by(survey $regionvar occ_code);
 gen learnings = log(earnings);
 
-// employment in base sector;
-bysort survey ${regionvar}: gen temp = nperson if occ_code == `baseocc';
-bysort survey ${regionvar}: egen baseemp = max(temp);
-drop temp;
-
-// median earnings in base sector;
-bysort survey ${regionvar}: gen temp = earnings if occ_code == `baseocc';
-bysort survey ${regionvar}: egen baseearn = max(temp);
-drop temp;
-
-// relative employment;
-gen rel_emp = nperson / baseemp;
-gen lrel_emp = log(rel_emp);
-
-// relative median earnings;
-gen rel_earn = earnings / baseearn;
-gen lrel_earn = log(rel_earn);
 
 /* -----------------------------------------------------------------------------
 SAVE CLEANED DATASET TO OUTPUT
