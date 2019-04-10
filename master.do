@@ -5,7 +5,7 @@ clear;
 
 // choose main directory;
 
-local OS mac; // windows, mac;
+local OS windows; // windows, mac;
 
 if 	"`OS'" == "windows" {;
 	global maindir D:/GitHub/OccChoice;
