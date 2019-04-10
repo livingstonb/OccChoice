@@ -5,7 +5,6 @@ clear;
 use ${build}/output/final_${region}.dta;
 
 
-
 /* -----------------------------------------------------------------------------
 DECLARE BASE OCCUPATION AND TIME SPECIFICATION
 -----------------------------------------------------------------------------*/;
@@ -18,85 +17,33 @@ spec3 - long-run changes
 */;
 local timevar spec1;
 
-/* -----------------------------------------------------------------------------
-COMPUTE RELATIVE EMPLOYMENT AND RELATIVE EARNINGS
------------------------------------------------------------------------------*/;
+foreach sp of varlist spec1 spec2 spec3 {;
+	global timevar `sp';
 
-// employment in base sector;
-bysort survey ${regionvar}: gen temp = nperson if occ_code == `baseocc';
-bysort survey ${regionvar}: egen baseemp = max(temp);
-drop temp;
+	/* -----------------------------------------------------------------------------
+	COMPUTE RELATIVE EMPLOYMENT AND RELATIVE EARNINGS
+	-----------------------------------------------------------------------------*/;
 
-// median earnings in base sector;
-bysort survey ${regionvar}: gen temp = earnings if occ_code == `baseocc';
-bysort survey ${regionvar}: egen baseearn = max(temp);
-drop temp;
+	// employment in base sector;
+	bysort survey ${regionvar}: gen temp = nperson if occ_code == `baseocc';
+	bysort survey ${regionvar}: egen baseemp = max(temp);
+	drop temp;
 
-// relative employment;
-gen rel_emp = nperson / baseemp;
-gen lrel_emp = log(rel_emp);
+	// median earnings in base sector;
+	bysort survey ${regionvar}: gen temp = earnings if occ_code == `baseocc';
+	bysort survey ${regionvar}: egen baseearn = max(temp);
+	drop temp;
 
-// relative median earnings;
-gen rel_earn = earnings / baseearn;
-gen lrel_earn = log(rel_earn);
+	// relative employment;
+	gen rel_emp = nperson / baseemp;
+	gen lrel_emp = log(rel_emp);
 
-/* -----------------------------------------------------------------------------
-REGRESSIONS
------------------------------------------------------------------------------*/;
-egen groupid = group(occ_code ${regionvar});
-xtset groupid `timevar';
-
-scalar io = 0;
-forvalues occnum = 1/66 {;
-	scalar io = io + 1;
+	// relative median earnings;
+	gen rel_earn = earnings / baseearn;
+	gen lrel_earn = log(rel_earn);
 	
-	quietly reg d.lrel_emp d.learnings d.lrel_earn 
-		if occ_code == `occnum', robust;
-		
-	if `occnum' == `baseocc' {;
-		matrix beta = .;
-		matrix se_beta = .;
-		matrix p_beta = .;
-		matrix theta = .;
-		matrix se_theta = .;
-		matrix p_theta = .;
-	};
-	else {;
-		matrix outtable = r(table);
-		matrix beta = _b[d.learnings];
-		matrix se_beta = _se[d.learnings];
-		matrix p_beta = outtable[4,1];
-		matrix theta = _b[d.lrel_earn];
-		matrix se_theta = _se[d.lrel_earn];
-		matrix p_theta = outtable[4,2];
-	};
-	
-	local row: label (occ_code) `occnum';
-	local row = stritrim("`row'");
-	local row = strtrim("`row'");
-	local row = abbrev("`row'",29);
-	local row = subinstr("`row'",".","",5);
-	foreach mat in beta se_beta theta se_theta {;
-		matrix rownames `mat' = "`occnum' `row'";
-	};
-		
-	if io == 1 {;
-		matrix betas = beta;
-		matrix se_betas = se_beta;
-		matrix p_betas = p_beta;
-		matrix thetas = theta;
-		matrix se_thetas = se_theta;
-		matrix p_thetas = p_theta;
-	};
-	else {;
-		matrix betas = betas\beta;
-		matrix se_betas = se_betas\se_beta;
-		matrix p_betas = p_betas\p_beta;
-		matrix thetas = thetas\theta;
-		matrix se_thetas = se_thetas\se_theta;
-		matrix p_thetas = p_thetas\p_theta;
-	};
+	/* -----------------------------------------------------------------------------
+	REGRESSIONS
+	-----------------------------------------------------------------------------*/;
+	do ${stats}/code/regressions.do;
 };
-
-matrix coeffs = betas,se_betas,p_betas,thetas,se_thetas,p_thetas;
-mat colnames coeffs = "beta_j" "se(beta_j)" "p(beta_j>|t|)" "theta_j" "se(theta_j)" "p(theta_j>|t|)";
