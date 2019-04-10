@@ -60,9 +60,16 @@ forvalues occnum = 1/66 {;
 };
 
 matrix coeffs = betas,se_betas,p_betas,thetas,se_thetas,p_thetas;
-mat colnames coeffs = "beta_j" "se(beta_j)" "p(beta_j>|t|)" "theta_j" "se(theta_j)" "p(theta_j>|t|)";
+mat colnames coeffs = "beta_j" "se_beta_j" "p_beta_j" "theta_j" "se_theta_j" "p_theta_j";
 
 cap mkdir ${stats}/output;
 putexcel set ${stats}/output/fdregressions_${timevar}.xlsx, replace;
 putexcel A1=matrix(coeffs), names;
 drop groupid;
+
+// replace xlsx output with csv for python;
+clear;
+import excel ${stats}/output/fdregressions_${timevar}.xlsx, firstrow;
+rename A Occupations;
+export delimited using fdregressions_${timevar}.csv, replace;
+erase ${stats}/output/fdregressions_${timevar}.xlsx;

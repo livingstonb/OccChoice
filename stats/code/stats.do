@@ -1,10 +1,6 @@
 #delimit ;
 set more 1;
 
-clear;
-use ${build}/output/final_${region}.dta;
-
-
 /* -----------------------------------------------------------------------------
 DECLARE BASE OCCUPATION AND TIME SPECIFICATION
 -----------------------------------------------------------------------------*/;
@@ -15,12 +11,15 @@ spec1 - 20ish year changes
 spec2 - 30ish year changes
 spec3 - long-run changes
 */;
-foreach sp of varlist spec1 spec2 spec3 {;
+foreach sp of newlist spec1 spec2 spec3 {;
 	global timevar `sp';
 
 	/* -----------------------------------------------------------------------------
 	COMPUTE RELATIVE EMPLOYMENT AND RELATIVE EARNINGS
 	-----------------------------------------------------------------------------*/;
+	
+	clear;
+	use ${build}/output/final_${region}.dta;
 
 	// employment in base sector;
 	bysort survey ${regionvar}: gen temp = nperson if occ_code == ${baseocc};
@@ -44,5 +43,4 @@ foreach sp of varlist spec1 spec2 spec3 {;
 	REGRESSIONS
 	-----------------------------------------------------------------------------*/;
 	do ${stats}/code/stats_regressions.do;
-	drop base* *rel_emp *rel_earn;
 };
