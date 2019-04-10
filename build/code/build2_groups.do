@@ -13,12 +13,12 @@ COLLAPSE TO REGION LEVEL
 local baseocc 1;
 
 gen nperson = 1;
-bysort survey $regionvar occ_code: egen groupobs = count(nperson);
+bysort survey $regionvar ${occvar}: egen groupobs = count(nperson);
 
 collapse 	(sum) nperson
-			(mean) groupobs spec*
+			(mean) groupobs
 			(median) incwage incbusfarm earnings yrseduc [fweight=perwt], 
-			by(survey $regionvar occ_code);
+			by(survey $regionvar ${occvar});
 gen learnings = log(earnings);
 
 
@@ -26,4 +26,4 @@ gen learnings = log(earnings);
 SAVE CLEANED DATASET TO OUTPUT
 -----------------------------------------------------------------------------*/;
 cap mkdir ${build}/output;
-save ${build}/output/final_${region}.dta, replace;
+save ${build}/output/final_${region}_${occs}.dta, replace;

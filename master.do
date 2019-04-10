@@ -34,7 +34,18 @@ else if "$region" == "metro" {;
 };
 
 do ${build}/code/build1_raw.do;
-do ${build}/code/build2_groups.do;
+
+foreach var of varlist occ_code occ_broad {;
+	global occvar `var';
+	if "`var'" == "occ_broad" {;
+		global occs occ19;
+	};
+	else if "`var'" == "occ_code" {;
+		global occs occ66;
+	};
+
+	do ${build}/code/build2_groups.do;
+};
 
 /* -----------------------------------------------------------------------------
 COMPUTE STATISTICS

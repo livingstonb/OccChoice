@@ -58,21 +58,6 @@ else if "$region" == "metro" {;
 gen survey = year;
 replace survey = 2010 if inlist(year,2011,2012,2013,2014);
 
-// 20-year changes;
-gen spec1 = 1 if survey == 1960;
-replace spec1 = 2 if survey == 1980;
-replace spec1 = 3 if survey == 2000;
-replace spec1 = 4 if survey == 2010;
-
-// 30-year changes;
-gen spec2 = 1 if survey == 1960;
-replace spec2 = 2 if survey == 1990;
-replace spec2 = 3 if survey == 2010;
-
-// long-run changes;
-gen spec3 = 1 if survey == 1960;
-replace spec3 = 2 if survey == 2010;
-
 /* CPI-U annual averages, using previous year's CPI because of survey wording
 ACS surveys for 2010-2014 are already inflation adjusted to 2014 dollars */;
 gen cpi = .;
@@ -107,7 +92,7 @@ replace yrseduc = 19 if educ == 11;
 // years of experience;
 gen experience = age - yrseduc - 5;
 
-// Hurst et al. occupation codes;
+// Hurst et al. 66 occupation codes;
 gen occ_code = .;					
 replace occ_code = 1  if ((occ1990 >= 3 & occ1990 <= 22) ) ;
 replace occ_code = 2  if ((occ1990 >= 23 & occ1990 <= 37) | (occ1990 >= 303 & occ1990 <= 307) | (occ1990 == 200));
@@ -244,6 +229,51 @@ label	define	occ_codelbl	65	`"Non Motor Vehicle Operator"',	add;
 label	define	occ_codelbl	66	`"Freight, Stock, Material	Handler"',	add;	
 
 label values occ_code occ_codelbl;
+
+// Hurst et al. 20 occupation codes;
+gen occ_broad = .  ;  						
+replace occ_broad = 1  if ((occ1990 >= 3 & occ1990 <= 22) );
+replace occ_broad = 2  if ((occ1990 >= 23 & occ1990 <= 37) | (occ1990 == 200));
+replace occ_broad = 3  if ((occ1990 >= 43 & occ1990 <= 68) | occ1990 == 867);
+replace occ_broad = 4  if ((occ1990 >= 69 & occ1990 <= 83) | (occ1990 >= 166 & occ1990 <= 177) | (occ1990 >= 183 & occ1990 <= 199));
+replace occ_broad = 5  if ((occ1990 >= 84 & occ1990 <= 89) | (occ1990 >= 178 & occ1990 <= 179)) ;
+replace occ_broad = 6  if ((occ1990 >= 95 & occ1990 <= 106) | (occ1990 >= 445 & occ1990 <= 447)) ;
+replace occ_broad = 7  if (occ1990 >= 113 & occ1990 <= 154);
+replace occ_broad = 8  if (occ1990 >= 155 & occ1990 <= 165);
+replace occ_broad = 9  if (occ1990 >= 203 & occ1990 <= 235);
+replace occ_broad = 10 if (occ1990 >= 243 & occ1990 <= 290);
+replace occ_broad = 11 if (occ1990 >= 303 & occ1990 <= 391);
+replace occ_broad = 12 if (occ1990 >= 413 & occ1990 <= 427);
+replace occ_broad = 13 if ((occ1990 >= 403 & occ1990 <= 408) | (occ1990 >= 433 & occ1990 <= 444)| (occ1990 >= 448 & occ1990 <= 469));
+replace occ_broad = 14  if ((occ1990 >= 473 & occ1990 <= 499) | (occ1990 >= 613 & occ1990 <= 617) | (occ1990 == 868));
+replace occ_broad = 15  if ((occ1990 >= 503 & occ1990 <= 599)| (occ1990 == 866) | (occ1990 == 869));
+replace occ_broad = 16  if (occ1990 >= 628 & occ1990 <= 688);
+replace occ_broad = 17  if (occ1990 >= 694 & occ1990 <= 779);
+replace occ_broad = 18  if ((occ1990 >= 783 & occ1990 <= 799) | (occ1990 >= 689 & occ1990 <= 693) |(occ1990 >= 875 & occ1990 <= 890) | (occ1990 == 874));
+replace occ_broad = 19  if ((occ1990 >= 803 & occ1990 <= 815) | (occ1990 >= 823 & occ1990 <= 834) |(occ1990 >= 843 & occ1990 <= 865));
+replace occ_broad = . if survey < 1980;
+
+label	define	occ_broadlbl	1	`"Executives, Administrative, and Managerial"',	add;	
+label	define	occ_broadlbl	2	`"Management Related"',	add;			
+label	define	occ_broadlbl	3	`"Architects, Engineers, Math, and Computer Science"',	add;				
+label	define	occ_broadlbl	4	`"Natural and Social Scientists, Recreation, Religious, Arts, Athletes"',	add;	
+label	define	occ_broadlbl	5	`"Doctors and Lawyers"',	add;				
+label	define	occ_broadlbl	6	`"Nurses, Therapists, and Other Health Service"',	add;	
+label	define	occ_broadlbl	7	`"Teachers, Postsecondary"',	add;			
+label	define	occ_broadlbl	8	`"Teachers, Non-Postsecondary and Librarians"',	add;			
+label	define	occ_broadlbl 	9	`"Health and Science Technicians"',	add;			
+label	define	occ_broadlbl	10	`"Sales, All"',	add;				
+label	define	occ_broadlbl	11	`"Administrative Support, Clerks, Record Keepers"',	add;			
+label	define	occ_broadlbl	12	`"Fire, Police, and Guards"',	add;			
+label	define	occ_broadlbl	13	`"Food, Cleaning, and Personal Services and Private Household"',	add;		
+label	define	occ_broadlbl	14	`"Farm, Related Agrigulture, Logging, and Extraction"',	add;
+label	define	occ_broadlbl	15	`"Mechanics and Construction"',	add;
+label	define	occ_broadlbl	16	`"Precision Manufacturing"',	add;		
+label	define	occ_broadlbl	17	`"Manufacturing Operators"',	add;		
+label	define	occ_broadlbl	18	`"Fabricators, Inspectors, and Material Handlers"',	add;			
+label	define	occ_broadlbl	19 `"Vehicle Operators"',	add;	
+
+label variable occ_broad occ_broadlbl;
 
 /* -----------------------------------------------------------------------------
 VARIABLE ADJUSTMENTS

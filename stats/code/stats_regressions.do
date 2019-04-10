@@ -4,15 +4,16 @@ set more 1;
 /* -----------------------------------------------------------------------------
 REGRESSIONS
 -----------------------------------------------------------------------------*/;
-egen groupid = group(occ_code ${regionvar});
+egen groupid = group(${occvar} ${regionvar});
 xtset groupid ${timevar};
 
 scalar io = 0;
-forvalues occnum = 1/66 {;
+
+forvalues occnum = $occnums {;
 	scalar io = io + 1;
 	
 	quietly reg d.lrel_emp d.learnings d.lrel_earn
-		if occ_code == `occnum', robust;
+		if ${occvar} == `occnum', robust;
 		
 	if `occnum' == $baseocc {;
 		matrix beta = .;
@@ -32,7 +33,7 @@ forvalues occnum = 1/66 {;
 		matrix p_theta = outtable[4,2];
 	};
 	
-	local row: label (occ_code) `occnum';
+	local row: label (${occvar}) `occnum';
 	local row = stritrim("`row'");
 	local row = strtrim("`row'");
 	local row = substr("`row'",1,29);
@@ -63,13 +64,13 @@ matrix coeffs = betas,se_betas,p_betas,thetas,se_thetas,p_thetas;
 mat colnames coeffs = "beta_j" "se_beta_j" "p_beta_j" "theta_j" "se_theta_j" "p_theta_j";
 
 cap mkdir ${stats}/output;
-putexcel set ${stats}/output/fdregressions_${timevar}.xlsx, replace;
+putexcel set ${stats}/output/fdregressions_${timevar}_${occs}.xlsx, replace;
 putexcel A1=matrix(coeffs), names;
 drop groupid;
 
 // replace xlsx output with csv for python;
 clear;
-import excel ${stats}/output/fdregressions_${timevar}.xlsx, firstrow;
+import excel ${stats}/output/fdregressions_${timevar}_${occs}.xlsx, firstrow;
 rename A Occupations;
-export delimited using fdregressions_${timevar}.csv, replace;
-erase ${stats}/output/fdregressions_${timevar}.xlsx;
+export delimited using fdregressions_${timevar}_${occs}.csv, replace;
+erase ${stats}/output/fdregressions_${timevar}_${occs}.xlsx;
