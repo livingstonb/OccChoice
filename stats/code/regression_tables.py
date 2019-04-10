@@ -33,17 +33,17 @@ for timevar in specs:
 		cols[4]:"se_theta",
 		cols[5]:"p_theta"},inplace=True)
 		
-	sigbeta95 = (tab["p_beta"] < 0.05) & (tab["p_beta"] >= 0.01)
-	sigbeta99 = tab["p_beta"] < 0.01
+	sigbeta10 = (tab["p_beta"] < 0.1) & (tab["p_beta"] >= 0.05)
+	sigbeta5 = tab["p_beta"] < 0.05
 
-	sigtheta95 = (tab["p_theta"] < 0.05) & (tab["p_theta"] >= 0.01)
-	sigtheta99 = tab["p_theta"] < 0.01
+	sigtheta10 = (tab["p_theta"] < 0.1) & (tab["p_theta"] >= 0.05)
+	sigtheta5 = tab["p_theta"] < 0.05
 		
 	tab = tab.astype(str)
-	tab.loc[sigbeta95==True,"beta"] = tab.loc[sigbeta95==True,"beta"] + "*"
-	tab.loc[sigbeta99==True,"beta"] = tab.loc[sigbeta99==True,"beta"] + "**"
-	tab.loc[sigtheta95==True,"theta"] = tab.loc[sigtheta95==True,"theta"] + "*"
-	tab.loc[sigtheta99==True,"theta"] = tab.loc[sigtheta99==True,"theta"] + "**"
+	tab.loc[sigbeta10==True,"beta"] = tab.loc[sigbeta10==True,"beta"] + "*"
+	tab.loc[sigbeta5==True,"beta"] = tab.loc[sigbeta5==True,"beta"] + "**"
+	tab.loc[sigtheta10==True,"theta"] = tab.loc[sigtheta10==True,"theta"] + "*"
+	tab.loc[sigtheta5==True,"theta"] = tab.loc[sigtheta5==True,"theta"] + "**"
 
 	tab["beta"] = tab["beta"] + ' (' + tab["se_beta"] + ')'
 	tab["theta"] = tab["theta"] + ' (' + tab["se_theta"] + ')'
@@ -153,4 +153,4 @@ for timevar in specs:
 	# reorder according to betas
 	tab.sort_values(by=['beta'],ascending=False,inplace=True)
 	
-	print(tab.head())
+	print(tab.head(15))
