@@ -50,15 +50,15 @@ for timevar in specs:
 	tab = tab[["beta","theta"]]
 
 	if occs == "occ19":
-		occ_codes = ["1 Executives, Administrative, and Managerial",
-					"2 Management Related",
-					"3 Architects, Engineers, Math, and Computer Science",
-					"4 Natural and Social Scientists, Recreation, Religious, Arts, Athletes",
-					"5 Doctors and Lawyers",
-					"6 Nurses, Therapists, and Other Health Service",
-					"7 Teachers, Postsecondary",
-					"8 Teachers, Non-Postsecondary and Librarians",
-					"9 Health and Science Technicians",
+		occ_codes = ["01 Executives, Administrative, and Managerial",
+					"02 Management Related",
+					"03 Architects, Engineers, Math, and Computer Science",
+					"04 Natural and Social Scientists, Recreation, Religious, Arts, Athletes",
+					"05 Doctors and Lawyers",
+					"06 Nurses, Therapists, and Other Health Service",
+					"07 Teachers, Postsecondary",
+					"08 Teachers, Non-Postsecondary and Librarians",
+					"09 Health and Science Technicians",
 					"10 Sales, All",
 					"11 Administrative Support, Clerks, Record Keepers",
 					"12 Fire, Police, and Guards",
@@ -70,15 +70,15 @@ for timevar in specs:
 					"18 Fabricators, Inspectors, and Material Handlers",
 					"19 Vehicle Operators"]
 	elif occs == "occ66":
-		occ_codes = ["1 Executives, Administrative, and Managerial",
-					"2 Management Related",
-					"3 Architects",
-					"4 Engineers",
-					"5 Math and Computer Science",
-					"6 Natural Science",
-					"7 Health Diagnosing",
-					"8 Health Assessment",
-					"9 Therapists",
+		occ_codes = ["01 Executives, Administrative, and Managerial",
+					"02 Management Related",
+					"03 Architects",
+					"04 Engineers",
+					"05 Math and Computer Science",
+					"06 Natural Science",
+					"07 Health Diagnosing",
+					"08 Health Assessment",
+					"09 Therapists",
 					"10 Teachers, Postsecondary",
 					"11 Teachers, Non-Postsecondary",
 					"12 Librarians and Curators",
@@ -130,18 +130,17 @@ for timevar in specs:
 					"58 Woodworking Machine Operator",
 					"59 Textile Machine Operator",
 					"60 Printing Machine Operator",
-					"61 Machine Operator, Other"
+					"61 Machine Operator, Other",
 					"62 Fabricators",
 					"63 Production Inspectors",
 					"64 Motor Vehicle Operator",
 					"65 Non Motor Vehicle Operator",
 					"66 Freight, Stock, Material Handler"]
 					
-					
 	index = list(tab.index);
 	newind = []
 	for name in index:
-		ii = int(name[0])
+		ii = int(name[0:2])
 		newind.append(occ_codes[ii-1])
 		
 	tab['newind'] = newind
