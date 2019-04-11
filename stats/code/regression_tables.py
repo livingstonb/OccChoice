@@ -17,15 +17,10 @@ outdir = maindir + 'output/'
 # occupation code (occ19, occ66)
 occs = "occ19"
 
-outname = outdir + 'fdregressions_' + occs + '.xlsx'
+outname = outdir + 'fdregressions.xlsx'
 writer = pd.ExcelWriter(outname,engine='xlsxwriter')
 
-if occs == "occ19":
-	specs = ['spec1','spec2']
-elif occs == "occ66":
-	specs = ['spec1','spec2','spec3']
-	
-for timevar in specs:
+def clean(timevar,occs):
 	fname = 'fdregressions_' + timevar + '_' + occs +'.csv'
 
 	tab = pd.read_csv(tempdir+fname,index_col=0)
@@ -176,6 +171,16 @@ for timevar in specs:
 		elif timevar == 'spec3':
 			sh = 'long-run changes'
 			
+	sh = occs + ', ' + sh
 	tab.to_excel(writer,sheet_name=sh)
 
+for occs in ['occ19','occ66']:
+	if occs == "occ19":
+		specs = ['spec1','spec2']
+	elif occs == "occ66":
+		specs = ['spec1','spec2','spec3']
+		
+	for timevar in specs:
+		clean(timevar,occs)
+		
 writer.save()

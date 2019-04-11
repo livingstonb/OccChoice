@@ -15,7 +15,7 @@ scalar io = 0;
 forvalues occnum = $occnums {;
 	scalar io = io + 1;
 	
-	quietly reg d.lrel_emp d.learnings d.lrel_earn
+	quietly reg d.lrel_emp d.lbaseearn d.lrel_earn
 		if ${occvar} == `occnum', robust;
 		
 	if `occnum' == $baseocc {;
@@ -28,8 +28,8 @@ forvalues occnum = $occnums {;
 	};
 	else {;
 		matrix outtable = r(table);
-		matrix beta = _b[d.learnings];
-		matrix se_beta = _se[d.learnings];
+		matrix beta = _b[d.lbaseearn];
+		matrix se_beta = _se[d.lbaseearn];
 		matrix p_beta = outtable[4,1];
 		matrix theta = _b[d.lrel_earn];
 		matrix se_theta = _se[d.lrel_earn];

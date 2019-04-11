@@ -61,7 +61,7 @@ foreach sp of local specs {;
 		replace spec2 = 3 if survey == 2010;
 
 		// long-run changes;
-		gen spec3 = 1 if survey == 1960;
+		gen spec3 = 1 if survey == 1980;
 		replace spec3 = 2 if survey == 2010;
 	};
 
@@ -77,6 +77,7 @@ foreach sp of local specs {;
 	// median earnings in base sector;
 	bysort survey ${regionvar}: gen temp = earnings if ${occvar} == ${baseocc};
 	bysort survey ${regionvar}: egen baseearn = max(temp);
+	gen lbaseearn = log(baseearn);
 	drop temp;
 
 	// relative employment;
