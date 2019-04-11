@@ -2,17 +2,23 @@ import numpy as np
 import pandas as pd
 
 # file directory
-os = 'windows'
+os = 'mac'
 
 if os == 'mac':
-	outdir = '/Users/brianlivingston/Documents/GitHub/OccChoice/stats/output/'
+	maindir = '/Users/brianlivingston/Documents/GitHub/OccChoice/stats/'
 elif os == 'linux':
-	outdir = '/media/hdd/GitHub/OccChoice/stats/output/'
+	maindir = '/media/hdd/GitHub/OccChoice/stats/'
 elif os == 'windows':
-	outdir = 'D:/GitHub/OccChoice/stats/output/'
+	maindir = 'D:/GitHub/OccChoice/stats/'
+	
+tempdir = maindir + 'temp/'
+outdir = maindir + 'output/'
 	
 # occupation code (occ19, occ66)
-occs = "occ66"
+occs = "occ19"
+
+outname = outdir + 'fdregressions_' + occs + '.xlsx'
+writer = pd.ExcelWriter(outname,engine='xlsxwriter')
 
 if occs == "occ19":
 	specs = ['spec1','spec2']
@@ -22,7 +28,7 @@ elif occs == "occ66":
 for timevar in specs:
 	fname = 'fdregressions_' + timevar + '_' + occs +'.csv'
 
-	tab = pd.read_csv(outdir+fname,index_col=0)
+	tab = pd.read_csv(tempdir+fname,index_col=0)
 	tab = tab.applymap(lambda x: np.round(x,3))
 	cols = tab.columns
 	newcols = ["beta","se_beta","p_beta","theta","se_theta","p_theta"]
@@ -153,4 +159,23 @@ for timevar in specs:
 	# reorder according to betas
 	tab.sort_values(by=['beta'],ascending=False,inplace=True)
 	
-	print(tab.head(15))
+	sh = timevar + '_' + occs
+	fname = outdir + 'fdregressions_' + timevar + '_' + occs + '.xlsx'
+	# tab.to_excel(fname,sheet_name=sh)
+	
+	if occs == 'occ19':
+		if timevar == 'spec1':
+			sh = '20ish year changes'
+		elif timevar == 'spec2':
+			sh = 'long-run changes'
+	elif occs == 'occ66':
+		if timevar == 'spec1':
+			sh = '20ish year changes'
+		elif timevar == 'spec2':
+			sh = '30ish year changes'
+		elif timevar == 'spec3':
+			sh = 'long-run changes'
+			
+	tab.to_excel(writer,sheet_name=sh)
+
+writer.save()

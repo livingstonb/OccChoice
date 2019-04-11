@@ -23,6 +23,7 @@ global stats ${maindir}/stats;
 /* -----------------------------------------------------------------------------
 BUILD DATASET
 -----------------------------------------------------------------------------*/;
+#delimit ;
 // define region as 'state' or 'metro';
 global region state;
 
@@ -50,6 +51,7 @@ foreach var of varlist occ_code occ_broad {;
 /* -----------------------------------------------------------------------------
 COMPUTE STATISTICS
 -----------------------------------------------------------------------------*/;
+#delimit ;
 // define region as 'state' or 'metro';
 global region state;
 
@@ -59,4 +61,4 @@ if "$region" == "state" {;
 else if "$region" == "metro" {;
 	global regionvar metarea;
 };
-// do ${stats}/code/stats.do;
+do ${stats}/code/stats.do;

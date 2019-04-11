@@ -1,4 +1,6 @@
 **/input
 **/output
+**/temp
+*.csv
 *.dta
 *.DS_Store
