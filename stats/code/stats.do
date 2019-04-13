@@ -1,6 +1,10 @@
 #delimit ;
 set more 1;
 
+/*
+main code for statistics
+*/;
+
 /* -----------------------------------------------------------------------------
 DECLARE BASE OCCUPATION AND TIME SPECIFICATION
 -----------------------------------------------------------------------------*/;
@@ -17,6 +21,7 @@ spec2 - 30ish year changes
 spec3 - long-run changes
 */;
 
+// loop over occupation codings;
 foreach var of newlist occ19 occ66 {;
 	global occs `var';
 	
@@ -31,6 +36,7 @@ foreach var of newlist occ19 occ66 {;
 		local specs spec1 spec2 spec3;
 	};
 
+// loop over time specifications;
 foreach sp of local specs {;
 	global timevar `sp';
 	

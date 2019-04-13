@@ -1,6 +1,11 @@
 import numpy as np
 import pandas as pd
 
+######
+# This code converts a four-column csv from stats_regressions.do to
+# a formatted xlsx spreadsheet
+######
+
 # file directory
 os = 'mac'
 

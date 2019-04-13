@@ -4,6 +4,16 @@ set more 1;
 cap mkdir ${stats}/temp;
 cap mkdir ${stats}/output;
 
+/*
+OLS estimation of regressions of log relative employment share on log earnings
+and log relative earnings.
+
+OLS is run for each occupation separately, with variation in the time and
+region variables.
+
+Must declare global variables occvar, regionvar, and timevar.
+*/
+
 /* -----------------------------------------------------------------------------
 REGRESSIONS
 -----------------------------------------------------------------------------*/;
@@ -18,6 +28,8 @@ forvalues occnum = $occnums {;
 	quietly reg d.lrel_emp d.lbaseearn d.lrel_earn
 		if ${occvar} == `occnum', robust;
 		
+	// store each statistic in a vector indexed by occupation code;
+	
 	if `occnum' == $baseocc {;
 		matrix beta = .;
 		matrix se_beta = .;
@@ -66,6 +78,7 @@ forvalues occnum = $occnums {;
 matrix coeffs = betas,se_betas,p_betas,thetas,se_thetas,p_thetas;
 mat colnames coeffs = "beta_j" "se_beta_j" "p_beta_j" "theta_j" "se_theta_j" "p_theta_j";
 
+// save as xlsx;
 putexcel set ${stats}/temp/fdregressions_${timevar}_${occs}.xlsx, replace;
 putexcel A1=matrix(coeffs), names;
 drop groupid;

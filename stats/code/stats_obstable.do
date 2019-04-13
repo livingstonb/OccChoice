@@ -1,6 +1,12 @@
 #delimit ;
 set more 1;
 
+/*
+Creates a table of occupations by regions for each year with the number of non-
+missing observations in each occupation-region-year group. May need to be updated
+since code was changed to use different occupation codings
+*/
+
 clear;
 use ${build}/output/final_${region}.dta;
 cap mkdir ${stats}/output;
