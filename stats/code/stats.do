@@ -8,7 +8,7 @@ main code for statistics
 /* -----------------------------------------------------------------------------
 DECLARE BASE OCCUPATION AND TIME SPECIFICATION
 -----------------------------------------------------------------------------*/;
-global baseocc 1;
+global baseocc 0; // 0 implies using all occupations pooled;
 
 /* 
 for occ19:
@@ -75,23 +75,33 @@ foreach sp of local specs {;
 	COMPUTE RELATIVE EMPLOYMENT AND RELATIVE EARNINGS
 	-----------------------------------------------------------------------------*/;
 
-	// employment in base sector;
-	bysort survey ${regionvar}: gen temp = nperson if ${occvar} == ${baseocc};
-	bysort survey ${regionvar}: egen baseemp = max(temp);
-	drop temp;
+	if "`baseocc'" > 0 {;
+		// employment in base sector;
+		bysort survey ${regionvar}: gen temp = nperson if ${occvar} == ${baseocc};
+		bysort survey ${regionvar}: egen baseemp = max(temp);
+		drop temp;
 
-	// median earnings in base sector;
-	bysort survey ${regionvar}: gen temp = earnings if ${occvar} == ${baseocc};
-	bysort survey ${regionvar}: egen baseearn = max(temp);
-	gen lbaseearn = log(baseearn);
-	drop temp;
+		// median earnings in base sector;
+		bysort survey ${regionvar}: gen temp = earnings if ${occvar} == ${baseocc};
+		bysort survey ${regionvar}: egen baseearn = max(temp);
+		gen lbaseearn = log(baseearn);
+		drop temp;
+		
+		// relative employment;
+		gen rel_emp = nperson / baseemp;
+		
+		// relative median earnings;
+		gen rel_earn = earnings / baseearn;
+	};
+	else if "`basocc'" == 0 {;
+		// relative employment;
+		gen rel_emp = nperson / grpemp;
+		
+		// relative median earnings;
+		gen rel_earn = earnings / grpearnings;
+	};
 
-	// relative employment;
-	gen rel_emp = nperson / baseemp;
 	gen lrel_emp = log(rel_emp);
-
-	// relative median earnings;
-	gen rel_earn = earnings / baseearn;
 	gen lrel_earn = log(rel_earn);
 	
 	/* -----------------------------------------------------------------------------
