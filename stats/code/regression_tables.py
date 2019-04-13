@@ -7,7 +7,7 @@ import pandas as pd
 ######
 
 # file directory
-os = 'mac'
+os = 'windows'
 
 if os == 'mac':
 	maindir = '/Users/brianlivingston/Documents/GitHub/OccChoice/stats/'
@@ -45,7 +45,9 @@ def clean(timevar,occs):
 	sigtheta10 = (tab["p_theta"] < 0.1) & (tab["p_theta"] >= 0.05)
 	sigtheta5 = tab["p_theta"] < 0.05
 		
-	tab = tab.astype(str)
+	tab["betafloat"] = tab["beta"]
+	strcols = ['beta','se_beta','p_beta','theta','se_theta','p_theta']
+	tab[strcols] = tab[strcols].astype(str)
 	tab.loc[sigbeta10==True,"beta"] = tab.loc[sigbeta10==True,"beta"] + "*"
 	tab.loc[sigbeta5==True,"beta"] = tab.loc[sigbeta5==True,"beta"] + "**"
 	tab.loc[sigtheta10==True,"theta"] = tab.loc[sigtheta10==True,"theta"] + "*"
@@ -53,6 +55,11 @@ def clean(timevar,occs):
 
 	tab["beta"] = tab["beta"] + ' (' + tab["se_beta"] + ')'
 	tab["theta"] = tab["theta"] + ' (' + tab["se_theta"] + ')'
+	
+	# reorder according to betas
+	tab.sort_values(by=['betafloat'],ascending=False,inplace=True)
+	tab[tab["betafloat"]<0] = tab[tab["betafloat"]<0].sort_values(by=["betafloat"])
+	
 	tab = tab[["beta","theta"]]
 
 	if occs == "occ19":
@@ -156,8 +163,6 @@ def clean(timevar,occs):
 	tab.loc[tab["beta"]=="nan (nan)","beta"] = "-"
 	tab.loc[tab["theta"]=="nan (nan)","theta"] = "-"
 	
-	# reorder according to betas
-	tab.sort_values(by=['beta'],ascending=False,inplace=True)
 	
 	sh = timevar + '_' + occs
 	fname = outdir + 'fdregressions_' + timevar + '_' + occs + '.xlsx'
