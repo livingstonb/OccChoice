@@ -75,7 +75,7 @@ foreach sp of local specs {;
 	COMPUTE RELATIVE EMPLOYMENT AND RELATIVE EARNINGS
 	-----------------------------------------------------------------------------*/;
 
-	if "`baseocc'" > 0 {;
+	if ${baseocc} > 0 {;
 		// employment in base sector;
 		bysort survey ${regionvar}: gen temp = nperson if ${occvar} == ${baseocc};
 		bysort survey ${regionvar}: egen baseemp = max(temp);
@@ -84,23 +84,20 @@ foreach sp of local specs {;
 		// median earnings in base sector;
 		bysort survey ${regionvar}: gen temp = earnings if ${occvar} == ${baseocc};
 		bysort survey ${regionvar}: egen baseearn = max(temp);
-		gen lbaseearn = log(baseearn);
 		drop temp;
-		
-		// relative employment;
-		gen rel_emp = nperson / baseemp;
-		
-		// relative median earnings;
-		gen rel_earn = earnings / baseearn;
 	};
-	else if "`basocc'" == 0 {;
-		// relative employment;
-		gen rel_emp = nperson / grpemp;
-		
-		// relative median earnings;
-		gen rel_earn = earnings / grpearnings;
+	else if ${baseocc} == 0 {;
+		gen baseemp = grpemp;
+		gen baseearn = grpearnings;
 	};
+	
+	// relative employment;
+	gen rel_emp = nperson / baseemp;
+		
+	// relative median earnings;
+	gen rel_earn = earnings / baseearn;
 
+	gen lbaseearn = log(baseearn);
 	gen lrel_emp = log(rel_emp);
 	gen lrel_earn = log(rel_earn);
 	

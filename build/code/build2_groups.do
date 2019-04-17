@@ -13,24 +13,26 @@ COLLAPSE TO REGION LEVEL
 local baseocc 1;
 
 gen nperson = 1;
-bysort survey $regionvar ${occvar}: egen groupobs = count(nperson);
+bysort survey $regionvar ${occvar}: egen groupobs = total(nperson);
 
 egen reg_year_id = group(survey ${regionvar});
-levels of reg_year_id, local(region_year_groups);
+quietly levelsof reg_year_id, local(region_year_groups);
 
 // median earnings for all occupations in region-year;
 gen grpearnings = .;
 label variable grpearnings "Median earnings in year for this region";
 foreach id of local region_year_groups {;
-	sum earnings if reg_year_id == `id' [fweight=perwt], detail;
-	replace grpearnings = r(p50) if reg_year_id == `id';
+	// quietly sum earnings if reg_year_id == `id' [fweight=perwt], detail;
+	// replace grpearnings = r(p50) if reg_year_id == `id';
+	
+	_pctile earnings if reg_year_id == `id' [fweight=perwt], p(50);
+	replace grpearnings = r(r1) if reg_year_id == `id';
 };
 drop reg_year_id;
 
 // total employment in all occupations in region-year;
 bysort survey ${regionvar}: egen grpemp = total(perwt);
 label variable grpemp "Total employment in year for this region";
-
 
 collapse 	(sum) nperson
 			(mean) groupobs grpearnings grpemp

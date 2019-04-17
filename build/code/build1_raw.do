@@ -29,22 +29,6 @@ drop newincbus incfarm incbus;
 rename busfarm incbusfarm;
 
 /* -----------------------------------------------------------------------------
-SAMPLE SELECTION
------------------------------------------------------------------------------*/;
-drop if (occ1990 == 999) | (wkswork2 == 0);
-drop if (uhrswork == 0 & year >= 1980) | (hrswork2 == 0 & year <= 1970);
-drop if inlist(incwage,999998,999999);
-
-keep if race == 1;
-keep if sex == 1;
-keep if (empstat == 1) & !inlist(empstatd,13,14,15); // exclude military;
-drop if occ1990 == 991; // unemployed;
-keep if (age >= 25) & (age <= 54);
-drop if (uhrswork < 30) & (year >= 1980);
-drop if (hrswork2 <= 3) & (year <= 1970);
-keep if (wkswork2 >= 5);
-
-/* -----------------------------------------------------------------------------
 GENERATE NEW VARIABLES
 -----------------------------------------------------------------------------*/;
 if "$region" == "state" {;
@@ -88,6 +72,9 @@ replace yrseduc = 14 if educ == 8;
 replace yrseduc = 15 if educ == 9;
 replace yrseduc = 16 if educ == 10;
 replace yrseduc = 19 if educ == 11;
+
+gen college = 1 if inlist(educ,10,11);
+replace college = 0 if educ <= 9;
 
 // years of experience;
 gen experience = age - yrseduc - 5;
@@ -286,14 +273,29 @@ foreach var of local nomvars {;
 	replace `var' = `var' / cpi if year <= 2000;
 };
 
-/* -----------------------------------------------------------------------------
-DROP OBSERVATIONS WITH LOW 2007 EARNINGS
------------------------------------------------------------------------------*/;
+// earnings in 2007;
 scalar cpi2007 = 207.342;
 scalar cpi2014 = 236.736;
 gen earn2007 = earnings * cpi2007 / cpi2014;
+
+/* -----------------------------------------------------------------------------
+SAMPLE SELECTION
+-----------------------------------------------------------------------------*/;
+drop if (occ1990 == 999) | (wkswork2 == 0);
+drop if (uhrswork == 0 & year >= 1980) | (hrswork2 == 0 & year <= 1970);
+drop if inlist(incwage,999998,999999);
+
+keep if race == 1;
+keep if sex == 1;
+keep if (empstat == 1) & !inlist(empstatd,13,14,15); // exclude military;
+drop if occ1990 == 991; // unemployed;
+keep if (age >= 25) & (age <= 54);
+drop if (uhrswork < 30) & (year >= 1980);
+drop if (hrswork2 <= 3) & (year <= 1970);
+keep if (wkswork2 >= 5);
 keep if earn2007 >= 1000;
-drop earn2007;
+
+keep if college == 1;
 
 /* -----------------------------------------------------------------------------
 SAVE CLEANED DATASET TO TEMP
